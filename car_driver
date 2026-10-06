@@ -1,0 +1,90 @@
+import java.util.*;
+
+class Driver {
+    private String name;
+    private int id;
+
+    public Driver(String name, int id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public Driver(Driver other) {
+        if (other != null) {
+            this.name = other.name;
+            this.id = other.id;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Driver[name=" + name + ", id=" + id + "]";
+    }
+}
+
+class Car implements Cloneable {
+    private String model;
+    private Driver driver;
+    private int[] speedHistory;
+
+    public Car(String model, String driverName, int driverId) {
+        this.model = model;
+        this.driver = new Driver(driverName, driverId);
+        this.speedHistory = new int[2];
+    }
+
+    public void drive() {
+        System.out.println(model + " is driving.");
+    }
+
+    public void drive(int speed) {
+        System.out.println(model + " is driving at " + speed + " km/h.");
+    }
+
+    public void setSpeed(int index, int speed) {
+        if (index >= 0 && index < speedHistory.length) {
+            this.speedHistory[index] = speed;
+        }
+    }
+
+    public int getSpeed(int index) {
+        if (index >= 0 && index < speedHistory.length) {
+            return this.speedHistory[index];
+        }
+        return -1;
+    }
+
+    @Override
+    public Car clone() throws CloneNotSupportedException {
+        return (Car) super.clone();
+    }
+
+    public Car deepCopy() {
+        Car copy = new Car(this.model, "", 0);
+        copy.driver = new Driver(this.driver);
+        copy.speedHistory = Arrays.copyOf(this.speedHistory, this.speedHistory.length);
+        return copy;
+    }
+
+    @Override
+    public String toString() {
+        return "Car[model=" + model + ", driver=" + driver + ", speedHistory=" + Arrays.toString(speedHistory) + "]";
+    }
+}
+
+public class Main {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Car c1 = new Car("Civic", "Sara", 101);
+        c1.drive();
+        c1.drive(80);
+
+        Car c2 = c1.clone();       // shallow copy
+        Car c3 = c1.deepCopy();    // deep copy
+
+        c2.setSpeed(0, 90);
+        System.out.println("After shallow copy: " + c1.getSpeed(0));
+
+        c3.setSpeed(1, 100);
+        System.out.println("After deep copy    : " + c1.getSpeed(1));
+    }
+}
