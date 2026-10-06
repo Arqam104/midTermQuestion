@@ -1,0 +1,117 @@
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Random;
+
+class Point {
+    private int x;
+    private int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Point(Point other) {
+        if (other != null) {
+            this.x = other.x;
+            this.y = other.y;
+        }
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Point point = (Point) other;
+        return this.x == point.x && this.y == point.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
+}
+
+class PointArray implements Cloneable {
+    private Point[] points;
+
+    public PointArray(Point[] points) {
+        this.points = points;
+    }
+
+    public Point getPoint(int index) {
+        return this.points[index];
+    }
+
+    @Override
+    public PointArray clone() throws CloneNotSupportedException {
+        return (PointArray) super.clone();
+    }
+
+    public PointArray deepCopy() {
+        if (this.points == null) {
+            return new PointArray(null);
+        }
+
+        Point[] copiedPoints = new Point[this.points.length];
+        for (int i = 0; i < this.points.length; i++) {
+            if (this.points[i] != null) {
+                copiedPoints[i] = new Point(this.points[i]);
+            }
+        }
+        return new PointArray(copiedPoints);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(points);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Random random = new Random();
+        Point[] data = new Point[100];
+
+        for (int i = 0; i < data.length; i++) {
+            int x = random.nextInt(1, 101);
+            int y = random.nextInt(1, 101);
+            data[i] = new Point(x, y);
+        }
+
+        PointArray original = new PointArray(data);
+        PointArray shallow = original.clone();
+        PointArray deep = original.deepCopy();
+
+        shallow.getPoint(0).setX(999);
+        System.out.println("Shallow shares data: " + (original.getPoint(0).getX() == 999));
+
+        deep.getPoint(1).setY(888);
+        System.out.println("Deep is independent: " + (original.getPoint(1).getY() != 888));
+
+        Point p = new Point(10, 20);
+        Point q = new Point(10, 20);
+        System.out.println("Logical equality: " + p.equals(q));
+    }
+}
